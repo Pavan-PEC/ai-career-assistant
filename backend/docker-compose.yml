@@ -1,0 +1,130 @@
+services:
+  eureka-server:
+    build: ./eureka_server
+    container_name: ai-career-eureka
+    ports:
+      - "8761:8761"
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: ai-career-api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
+    depends_on:
+      - eureka-server
+      - user-service
+      - document-service
+      - ai-service
+      - notification-service
+
+  user-service:
+    build: ./user-service
+    container_name: ai-career-user-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/user_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: Pavan123#
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+    depends_on:
+      - mysql
+      - redis
+      - eureka-server
+
+  document-service:
+    build: ./document-service
+    container_name: ai-career-document-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/document_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: Pavan123#
+      SPRING_RABBITMQ_HOST: rabbitmq
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
+      APP_STORAGE_LOCATION: /app/uploads
+    volumes:
+      - document_uploads:/app/uploads
+    depends_on:
+      - mysql
+      - rabbitmq
+      - eureka-server
+
+  ai-service:
+    build: ./ai-service
+    container_name: ai-career-ai-service
+    environment:
+      SPRING_RABBITMQ_HOST: rabbitmq
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
+      QDRANT_URL: http://qdrant:6333
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+    volumes:
+      - document_uploads:/app/uploads
+    depends_on:
+      - rabbitmq
+      - qdrant
+      - eureka-server
+
+  notification-service:
+    build: ./notification-service
+    container_name: ai-career-notification-service
+    environment:
+      SPRING_RABBITMQ_HOST: rabbitmq
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
+    depends_on:
+      - rabbitmq
+      - eureka-server
+
+  mysql:
+    image: mysql:8.4
+    container_name: ai-career-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: Pavan123#
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pPavan123#"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: ai-career-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7.4-alpine
+    container_name: ai-career-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  qdrant:
+    image: qdrant/qdrant:v1.12.6
+    container_name: ai-career-qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+
+volumes:
+  mysql_data:
+  document_uploads:
+  qdrant_data:

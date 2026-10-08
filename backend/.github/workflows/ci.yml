@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - eureka_server
+          - api-gateway
+          - user-service
+          - document-service
+          - ai-service
+          - notification-service
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: Build ${{ matrix.service }}
+        working-directory: ${{ matrix.service }}
+        run: ./gradlew build --no-daemon
+      - name: Build Docker image
+        working-directory: ${{ matrix.service }}
+        run: docker build -t ai-career/${{ matrix.service }}:${{ github.sha }} .

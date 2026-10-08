@@ -1,17 +1,28 @@
 # AI Career Assistant
 
-A multi-service project (frontend + backend) that demonstrates an AI-powered career assistant. This repo contains services, infrastructure configs, and example workflows.
+A polished multi-service project (frontend + backend) demonstrating an AI-powered career assistant.
 
-Key points
-- Clean architecture with microservices in backend/ and a single-page frontend in frontend/
-- Docker and Kubernetes manifests for local testing and deployment
-- CI workflow in backend/.github/workflows/ci.yml
+Highlights
+- Microservices backend and React SPA frontend
+- Docker Compose for local development and Kubernetes manifests for production tests
+- CI pipeline in backend/.github/workflows/ci.yml
+- Design docs for interviews: docs/HLD.md, docs/LLD.md, PRESENTATION.md
 
-Quick start
-1. See backend/README.md and frontend/README.md for service-specific steps.
-2. To run locally (recommended):
-   - Backend: follow backend/README.md (docker-compose available)
-   - Frontend: cd frontend && npm install && npm run dev
+Getting started
+1. Backend: see backend/README.md (docker-compose available)
+2. Frontend: cd frontend && npm install && npm run dev
+
+Demo (quick)
+- Upload a resume, view parsing results, run an AI interview simulation.
+
+Contributing & Contact
+- Replace author info in this README and LICENSE before publishing.
+- Use CONTRIBUTING.md for contribution guidelines.
+
+Files of interest
+- docs/HLD.md — High-level architecture (for interviews)
+- docs/LLD.md — Low-level design and API examples
+- PRESENTATION.md — One-page demo script and talking points
 
 Contact
-- Author: [Your Name] — replace with your name and contact details before publishing.
+- Your Name — your.email@example.com

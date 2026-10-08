@@ -25,4 +25,11 @@ Files of interest
 - PRESENTATION.md — One-page demo script and talking points
 
 Contact
-- Your Name — your.email@example.com
+- Pavan-PEC — pavankumar.pec.123@gmail.com
+
+Badges
+- Build: https://github.com/Pavan-PEC/ai-career-assistant/actions
+- License: MIT
+
+Showcase
+- Add screenshots to screenshots/ and update docs for demo links.
